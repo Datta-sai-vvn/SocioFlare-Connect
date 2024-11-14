@@ -1,24 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import db from './firebase/firebaseConfig';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { UserProvider } from './context/UserContext'; // Import UserProvider
+import SignUp from './components/SignUp';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import UploadProfileImage from './components/UploadProfileImage';
+import Events from './components/Events';
+import OtherEvents from './components/OtherEvents';
+import MatchingProfile from './components/MatchingProfile';
+import ChatInterface from './components/ChatInterface';
+import Feedback from './components/Feedback';
+import GenderSelection from './components/GenderSelection';
+import AddSocialLinks from './components/AddSocialLinks';
+import ProfileOverview from './components/ProfileOverview';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/upload" element={<UploadProfileImage />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/other-events" element={<OtherEvents />} />
+            <Route path="/matching-profile" element={<MatchingProfile />} />
+            <Route path="/chat" element={<ChatInterface />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/gender-selection" element={<GenderSelection />} />
+            <Route path="/add-social-links" element={<AddSocialLinks />} />
+            <Route path="/profile-overview" element={<ProfileOverview />} />
+          </Routes>
+        </div>
+      </Router>
+    </UserProvider>
   );
 }
 

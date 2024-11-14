@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "n": "socioflare2",
+    "default": "socioflare2",
+    "present": "sociaflare-connect"
+  },
+  "targets": {},
+  "etags": {}
+}
