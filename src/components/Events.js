@@ -83,12 +83,12 @@ const Events = () => {
     { id: 2, name: 'Cooking' },
     { id: 3, name: 'Eat Out' },
     { id: 4, name: 'Movies' },
-    // { id: 5, name: 'Home Party' },
-    // { id: 6, name: 'Gardening' },
-    // { id: 7, name: 'Hang Out' },
-    // { id: 8, name: 'Hiking' },
-    // { id: 9, name: 'Biking' },
-    // { id: 10, name: 'Other' },
+    { id: 5, name: 'Home Party' },
+    { id: 6, name: 'Gardening' },
+    { id: 7, name: 'Hang Out' },
+    { id: 8, name: 'Hiking' },
+    { id: 9, name: 'Biking' },
+    { id: 10, name: 'Other' },
   ];
 
   const handleContinueClick = () => {
