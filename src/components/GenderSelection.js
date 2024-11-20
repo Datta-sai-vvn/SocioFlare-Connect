@@ -6,6 +6,10 @@ import Modal from 'react-modal';
 import Select from 'react-select';
 import getCroppedImg from '../utils/cropImage';
 import { UserContext } from '../context/UserContext';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig';
+import { auth } from '../firebase/firebaseConfig';
+import { storage } from '../firebase/firebaseConfig';
 
 Modal.setAppElement('#root');
 
@@ -168,12 +172,32 @@ const GenderSelection = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    updateUser({
-      profilePicture,
-      ...formData,
-      socialLinks
-    });
+  const handleSave = async () => {
+    
+    const user = auth.currentUser; 
+
+    const userData = {
+      profilePicture, 
+      name: formData.name,
+      email: formData.email,
+      age: formData.age,
+      gender: formData.gender,
+      language: formData.language,
+      interests: formData.interests,
+      city: formData.city,
+      bio: formData.bio,
+      socialLinks, 
+    };
+
+    try {
+      await setDoc(doc(db, 'users', user.uid), userData); 
+      console.log('User data saved successfully to Firestore.');
+  
+      updateUser(userData); 
+      navigate('/profile-overview');
+    } catch (error) {
+      console.error('Error saving user data to Firestore:', error);
+    }
     navigate('/profile-overview');
   };
 

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext} from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import EventsCard from './EventsCard';
+import { getFirestore, collection, addDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig';
+import { UserContext } from '../context/UserContext';
 
 const EventsContainer = styled.div`
   display: grid;
@@ -156,6 +159,9 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [interestLevel, setInterestLevel] = useState(5);
 
+  const { user } = useContext(UserContext);
+  
+
   const eventsList = [
     { id: 1, name: 'Social Service' },
     { id: 2, name: 'Cooking' },
@@ -189,63 +195,82 @@ const Events = () => {
     { id: 30, name: 'Morning Walk'},
   ];
 
-  const handleContinueClick = () => {
-    console.log('Interest Level for', selectedEvent, ':', interestLevel);
-    navigate('/matching-profile');
+  const handleContinueClick = async () => {
+    if (!selectedEvent) {
+      alert("Please select an event before continuing.");
+      return;
+    }
+  
+    if (!user || !user.uid) {
+      alert("User not logged in or UID not available.");
+      return;
+    }
+  
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+  
+      await setDoc(userDocRef, {
+        selectedEvent: selectedEvent.name,
+        interestLevel: interestLevel,
+        eventTimestamp: new Date(),
+      }, { merge: true }); 
+  
+      console.log("User document updated successfully.");
+  
+      navigate("/matching-profile");
+    } catch (e) {
+      console.error("Error updating user document: ", e);
+    }
   };
 
-  const handleEventClick = (event) => {
-    setSelectedEvent(event);
-  };
+return (
+  <DndProvider backend={HTML5Backend}>
+    <EventsContainer>
+      <Sidebar>
+        <NavButton onClick={() => navigate('/profile-overview')}>Home</NavButton>
+        <NavButton onClick={() => navigate('/events')}>Events</NavButton>
+        <NavButton onClick={() => navigate('/chat')}>Messages</NavButton>
+      </Sidebar>
 
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <EventsContainer>
-        <Sidebar>
-          <NavButton onClick={() => navigate('/profile-overview')}>Home</NavButton>
-          <NavButton onClick={() => navigate('/events')}>Events</NavButton>
-          <NavButton onClick={() => navigate('/chat')}>Messages</NavButton>
-        </Sidebar>
+      <ContentContainer>
+        <EventsTitle>Choose an event</EventsTitle>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '20px' }}>
+          {eventsList.map((event) => (
+            <EventsCard key={event.id} event={event} onClick={() => setSelectedEvent(event)} />
+          ))}
+        </div>
 
-        <ContentContainer>
-          <EventsTitle>Choose an event</EventsTitle>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '20px' }}>
-            {eventsList.map((event) => (
-              <EventsCard key={event.id} event={event} onClick={() => handleEventClick(event)} />
-            ))}
-          </div>
+        {selectedEvent && (
+          <EventInterestSlider>
+            <HighlightedHeading>How interested are you in {selectedEvent.name}?</HighlightedHeading>
+            <Slider
+              type="range"
+              min="1"
+              max="10"
+              value={interestLevel}
+              onChange={(e) => setInterestLevel(Number(e.target.value))}
+            />
+            <InterestLevelLabel>Interest Level: {interestLevel}</InterestLevelLabel>
+            <ScaleNumbers>
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5</span>
+              <span>6</span>
+              <span>7</span>
+              <span>8</span>
+              <span>9</span>
+              <span>10</span>
+            </ScaleNumbers>
+          </EventInterestSlider>
+        )}
 
-          {selectedEvent && (
-            <EventInterestSlider>
-              <HighlightedHeading>How interested are you in {selectedEvent.name}?</HighlightedHeading>
-              <Slider
-                type="range"
-                min="1"
-                max="10"
-                value={interestLevel}
-                onChange={(e) => setInterestLevel(e.target.value)}
-              />
-              <InterestLevelLabel>Interest Level: {interestLevel}</InterestLevelLabel>
-              <ScaleNumbers>
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
-                <span>5</span>
-                <span>6</span>
-                <span>7</span>
-                <span>8</span>
-                <span>9</span>
-                <span>10</span>
-              </ScaleNumbers>
-            </EventInterestSlider>
-          )}
-
-          <ContinueButton onClick={handleContinueClick}>Continue</ContinueButton>
-        </ContentContainer>
-      </EventsContainer>
-    </DndProvider>
-  );
+        <ContinueButton onClick={handleContinueClick}>Continue</ContinueButton>
+      </ContentContainer>
+    </EventsContainer>
+  </DndProvider>
+);
 };
 
 export default Events;

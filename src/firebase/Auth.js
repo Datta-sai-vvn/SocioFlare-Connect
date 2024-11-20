@@ -1,5 +1,5 @@
 // src/firebase/Auth.js
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { app } from "./firebaseConfig"; // Import the Firebase app
 
 // Initialize Firebase app
@@ -32,6 +32,15 @@ export const logoutUser = async () => {
     console.log("User logged out successfully");
   } catch (error) {
     console.error("Error logging out:", error.message);
+  }
+};
+
+export const updateDisplayName = async (newName) => {
+  if (auth.currentUser) {
+    await updateProfile(auth.currentUser, {
+      displayName: newName,
+    });
+    console.log('Display name updated');
   }
 };
 
