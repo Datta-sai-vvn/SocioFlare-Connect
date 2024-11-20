@@ -14,7 +14,7 @@ const CardContainer = styled.div`
   cursor: pointer;
 `;
 
-const EventsCard = ({ event }) => {
+const EventsCard = ({ event, onClick }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'EVENT',
     item: { id: event.id, name: event.name },
@@ -24,7 +24,7 @@ const EventsCard = ({ event }) => {
   }));
 
   return (
-    <CardContainer ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
+    <CardContainer ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }} onClick={onClick}>
       {event.name}
     </CardContainer>
   );
