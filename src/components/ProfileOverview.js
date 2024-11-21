@@ -1,5 +1,3 @@
-// src/components/ProfileOverview.js
-
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +5,7 @@ import { UserContext } from '../context/UserContext';
 
 const OverviewContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr; // Adjust columns for even spacing
+  grid-template-columns: 1fr 1.5fr 1fr;
   gap: 40px;
   padding: 40px;
   background-color: #f8f8f8;
@@ -23,7 +21,7 @@ const Sidebar = styled.div`
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  width: 100%; // Ensure full width in its column
+  width: 100%;
 `;
 
 const NavButton = styled.button`
@@ -37,7 +35,7 @@ const NavButton = styled.button`
   cursor: pointer;
   text-align: center;
   transition: background-color 0.3s ease;
-  
+
   &:hover {
     background-color: #7b5f90;
   }
@@ -54,9 +52,9 @@ const SearchInput = styled.input`
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center; // Center-align content within container
+  align-items: center;
   gap: 20px;
-  width: 100%; // Ensure it fills the center column
+  width: 100%;
 `;
 
 const ActivityCard = styled.div`
@@ -67,7 +65,7 @@ const ActivityCard = styled.div`
   border-radius: 70px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   align-items: center;
-  width: 80%; // Center the card content
+  width: 80%;
 `;
 
 const EventImage = styled.img`
@@ -83,7 +81,7 @@ const ProfileContainer = styled.div`
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 100%; // Ensure full width in its column
+  width: 100%;
 `;
 
 const ProfileImage = styled.img`
@@ -98,9 +96,23 @@ const ProfileDetail = styled.div`
   margin-top: 20px;
 `;
 
+const EditButton = styled.button`
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #9e7bb5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #7b5f90;
+  }
+`;
+
 const ProfileOverview = () => {
   const navigate = useNavigate();
-  const { user } = useContext(UserContext); // Access user data from context
+  const { user } = useContext(UserContext);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -117,50 +129,12 @@ const ProfileOverview = () => {
 
       <ContentContainer>
         <h2>Past Activity Info</h2>
-        
-        {/* Hardcoded Activity Cards */}
         <ActivityCard>
           <EventImage src="https://via.placeholder.com/100?text=Cooking" alt="Cooking Event" />
           <div>
             <h3>Cooking Event</h3>
             <p>Date: 10/05/2024 6:00 PM</p>
             <p>Participants: Star Lopez, John Tyler</p>
-          </div>
-        </ActivityCard>
-
-        <ActivityCard>
-          <EventImage src="https://via.placeholder.com/100?text=Hiking" alt="Hiking Event" />
-          <div>
-            <h3>Hiking Event</h3>
-            <p>Date: 09/19/2024 3:00 PM</p>
-            <p>Participants: John Tyler, Alex Radames</p>
-          </div>
-        </ActivityCard>
-
-        <ActivityCard>
-          <EventImage src="https://via.placeholder.com/100?text=Movie+Night" alt="Movie Night Event" />
-          <div>
-            <h3>Movie Night</h3>
-            <p>Date: 08/22/2024 7:30 PM</p>
-            <p>Participants: Emma Green, John Tyler</p>
-          </div>
-        </ActivityCard>
-
-        <ActivityCard>
-          <EventImage src="https://via.placeholder.com/100?text=Book+Club" alt="Book Club Event" />
-          <div>
-            <h3>Book Club</h3>
-            <p>Date: 07/15/2024 5:00 PM</p>
-            <p>Participants: Michael Johnson, John Tyler</p>
-          </div>
-        </ActivityCard>
-
-        <ActivityCard>
-          <EventImage src="https://via.placeholder.com/100?text=Yoga+Session" alt="Yoga Session Event" />
-          <div>
-            <h3>Yoga Session</h3>
-            <p>Date: 06/10/2024 6:30 AM</p>
-            <p>Participants: Alex Brown, John Tyler</p>
           </div>
         </ActivityCard>
       </ContentContainer>
@@ -187,6 +161,7 @@ const ProfileOverview = () => {
               ))}
           </ProfileDetail>
         )}
+        <EditButton onClick={() => navigate('/gender-selection')}>Edit Profile</EditButton>
       </ProfileContainer>
     </OverviewContainer>
   );
