@@ -9,7 +9,7 @@ import { UserContext } from '../context/UserContext';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import { auth } from '../firebase/firebaseConfig';
-import { storage } from '../firebase/firebaseConfig';
+
 
 Modal.setAppElement('#root');
 
@@ -153,7 +153,7 @@ const GenderSelection = () => {
     }
   };
 
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+  const onCropComplete = useCallback((_, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -173,11 +173,9 @@ const GenderSelection = () => {
   };
 
   const handleSave = async () => {
-    
-    const user = auth.currentUser; 
-
+    const user = auth.currentUser;
     const userData = {
-      profilePicture, 
+      profilePicture,
       name: formData.name,
       email: formData.email,
       age: formData.age,
@@ -186,19 +184,17 @@ const GenderSelection = () => {
       interests: formData.interests,
       city: formData.city,
       bio: formData.bio,
-      socialLinks, 
+      socialLinks
     };
 
     try {
-      await setDoc(doc(db, 'users', user.uid), userData); 
+      await setDoc(doc(db, 'users', user.uid), userData);
       console.log('User data saved successfully to Firestore.');
-  
-      updateUser(userData); 
+      updateUser(userData);
       navigate('/profile-overview');
     } catch (error) {
       console.error('Error saving user data to Firestore:', error);
     }
-    navigate('/profile-overview');
   };
 
   return (
@@ -223,7 +219,7 @@ const GenderSelection = () => {
                   accept="image/*"
                   onChange={handleProfilePictureChange}
                 />
-                <span role="img" aria-label="camera">📸</span>
+                📸
               </label>
             </CameraIcon>
           </ProfileImage>
@@ -233,11 +229,12 @@ const GenderSelection = () => {
               <h3>Social Media Links</h3>
               <p>Instagram: {socialLinks.instagram}</p>
               <p>LinkedIn: {socialLinks.linkedin}</p>
-              {socialLinks.otherLinks && socialLinks.otherLinks.map((link, index) => (
-                <p key={index}>
-                  {link.platform}: {link.link}
-                </p>
-              ))}
+              {socialLinks.otherLinks &&
+                socialLinks.otherLinks.map((link, index) => (
+                  <p key={index}>
+                    {link.platform}: {link.link}
+                  </p>
+                ))}
             </SocialLinksContainer>
           )}
           <button onClick={() => navigate('/add-social-links')}>
@@ -272,7 +269,10 @@ const GenderSelection = () => {
             className="basic-multi-select"
             classNamePrefix="select"
             onChange={(selectedOptions) =>
-              setFormData((prev) => ({ ...prev, language: selectedOptions.map((opt) => opt.value) }))
+              setFormData((prev) => ({
+                ...prev,
+                language: selectedOptions.map((opt) => opt.value)
+              }))
             }
           />
 
