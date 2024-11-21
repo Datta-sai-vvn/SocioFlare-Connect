@@ -1,9 +1,11 @@
-// src/components/ChatInterface.js
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import { addDoc, collection, onSnapshot, serverTimestamp, where, query, orderBy } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
+
 
 const ChatPage = styled.div`
   display: flex;
@@ -93,26 +95,53 @@ const ChatInterface = () => {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
   const [conversations] = useState([
-    { id: 1, name: 'John Tyler', message: 'Hello!' },
-    { id: 2, name: 'Star Lopez', message: 'Hi there!' },
-    { id: 3, name: 'Alex Brown', message: 'Good morning!' },
-    { id: 4, name: 'Emma Green', message: 'Let’s catch up soon!' },
-    { id: 5, name: 'Michael Johnson', message: 'How’s it going?' }
+    { id: 1, name: 'General Chat', room: 'general' },
+    { id: 2, name: 'Random Chat', room: 'random' },
   ]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
+  // Firebase references
+  const messagesRef = collection(db, 'messages');
+
+  useEffect(() => {
+    if (selectedConversation) {
+      const queryMessages = query(
+        messagesRef,
+        where('room', '==', selectedConversation.room),
+        orderBy('createdAt')
+      );
+      const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+        const fetchedMessages = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setMessages(fetchedMessages);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [selectedConversation]);
+
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
-    setMessages([]); // Clear previous messages (or load conversation history if available)
   };
 
-  const handleSendMessage = () => {
-    if (messageInput.trim() !== '') {
-      setMessages([...messages, { text: messageInput, sent: true }]);
-      setMessageInput('');
-    }
+
+  const handleSendMessage = async () => {
+    if (messageInput.trim() === '') return;
+  
+    const userName = user?.displayName || auth.currentUser?.displayName || 'Guest';
+  
+    await addDoc(messagesRef, {
+      text: messageInput,
+      createdAt: serverTimestamp(),
+      user: userName,
+      room: selectedConversation.room,
+    });
+  
+    setMessageInput('');
   };
 
   return (
@@ -125,13 +154,11 @@ const ChatInterface = () => {
             onClick={() => handleSelectConversation(conversation)}
           >
             <h4>{conversation.name}</h4>
-            <p>{conversation.message}</p>
           </ConversationItem>
         ))}
       </ConversationsList>
 
       <ChatContainer>
-        {/* Home and Events Navigation Buttons */}
         <NavigationButtons>
           <NavButton onClick={() => navigate('/profile-overview')}>Home</NavButton>
           <NavButton onClick={() => navigate('/events')}>Events</NavButton>
@@ -140,8 +167,10 @@ const ChatInterface = () => {
         <h2>Chat with {selectedConversation ? selectedConversation.name : '...'}</h2>
 
         <ChatArea>
-          {messages.map((msg, index) => (
-            <p key={index}>{msg.sent ? `You: ${msg.text}` : `${selectedConversation?.name}: ${msg.text}`}</p>
+          {messages.map((msg) => (
+            <p key={msg.id}>
+              <strong>{msg.user}:</strong> {msg.text}
+            </p>
           ))}
         </ChatArea>
 
