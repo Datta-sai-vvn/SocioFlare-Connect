@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/Auth';
 import styled from 'styled-components';
@@ -42,7 +42,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/gender-selection'); // Redirect to Gender Selection page on success
+      navigate('/profile-overview'); // Redirect to Profile Overview page on success
     } catch (error) {
       console.error('Login failed:', error.message);
       alert('Failed to login. Please check your credentials.');
