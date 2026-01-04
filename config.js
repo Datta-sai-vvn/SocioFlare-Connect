@@ -1,2 +1,2 @@
-// Configuration file for feature flags
+// Global configuration settings
 const FEATURE_ENABLED = true;
